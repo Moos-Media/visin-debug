@@ -1,3 +1,4 @@
+rm -r debugpage
 npm run build
 mv build debugpage
 cd ..
