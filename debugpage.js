@@ -3,20 +3,11 @@ let SESSIONTOKEN;
 let usernameLabel, usernameInput, passwordLabel, passwordInput;
 
 function preload() {
-  if (!isLoggedIn) {
-    usernameLabel = createElement("p", "Username:");
-    usernameInput = createInput("", "text");
-    passwordLabel = createElement("p", "Password:");
-    passwordInput = createInput("", "password");
-    loginButton = createButton("Login");
-
-    loginButton.mousePressed(login);
-  }
+  if (!isLoggedIn) createLoginUI();
 }
 
 function setup() {
-  createCanvas(500, 500);
-  fullscreen(true);
+  canvasUI = createCanvas(window.innerWidth, window.innerHeight - 250);
 
   if (!isLoggedIn) {
     drawLoginWarning();
@@ -47,7 +38,7 @@ const login = async (e) => {
   if (json.result) {
     isLoggedIn = true;
     SESSIONTOKEN = json.sessionToken;
-    console.log(SESSIONTOKEN);
+    cleanLoginUI();
   }
 };
 
@@ -64,3 +55,26 @@ const drawLoginWarning = () => {
   textSize(32);
   text("Login to access Debug Mode", width / 2, 350);
 };
+
+const createLoginUI = () => {
+  usernameLabel = createElement("p", "Username:");
+  usernameInput = createInput("", "text");
+  passwordLabel = createElement("p", "Password:");
+  passwordInput = createInput("", "password");
+  loginButton = createButton("Login");
+
+  loginButton.mousePressed(login);
+};
+
+const cleanLoginUI = () => {
+  usernameInput.remove();
+  usernameLabel.remove();
+  passwordLabel.remove();
+  passwordInput.remove();
+  loginButton.remove();
+  resizeCanvas(window.innerWidth, window.innerHeight);
+};
+
+function windowResized() {
+  resizeCanvas(window.innerWidth, window.innerHeight);
+}
