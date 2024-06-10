@@ -38,7 +38,6 @@ const login = async (e) => {
   if (json.result) {
     isLoggedIn = true;
     SESSIONTOKEN = json.sessionToken;
-    console.log(SESSIONTOKEN);
     cleanLoginUI();
   }
 };
