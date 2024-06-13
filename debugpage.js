@@ -33,7 +33,7 @@ const login = async (e) => {
     body: JSON.stringify(data),
   };
 
-  const response = await fetch("/api/login", options);
+  const response = await fetch("/api/debug/login", options);
   const json = await response.json();
   if (json.result) {
     isLoggedIn = true;
