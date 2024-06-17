@@ -1,5 +1,6 @@
 let isLoggedIn = false;
 let SESSIONTOKEN;
+let CURRENTBOARD, BOARDWIDTH, BOARDHEIGHT;
 let usernameLabel, usernameInput, passwordLabel, passwordInput;
 
 function preload() {
@@ -8,6 +9,7 @@ function preload() {
 
 function setup() {
   canvasUI = createCanvas(window.innerWidth, window.innerHeight - 250);
+  frameRate(1);
 
   if (!isLoggedIn) {
     drawLoginWarning();
@@ -15,7 +17,10 @@ function setup() {
 }
 
 function draw() {
-  if (isLoggedIn) background(255, 0, 0);
+  if (isLoggedIn) {
+    getCurrentBoardInfo();
+    drawCurrentBoard();
+  }
 }
 
 const login = async (e) => {
@@ -77,4 +82,46 @@ const cleanLoginUI = () => {
 
 function windowResized() {
   resizeCanvas(window.innerWidth, window.innerHeight);
+}
+
+async function getCurrentBoardInfo() {
+  const data = { sessionToken: SESSIONTOKEN };
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  };
+
+  const response = await fetch("/api/debug/getCurrentBoard", options);
+  const json = await response.json();
+
+  if (json.status == "success") {
+    CURRENTBOARD = json.boardInfo.board;
+    BOARDHEIGHT = json.boardInfo.height;
+    BOARDWIDTH = json.boardInfo.width;
+  }
+}
+
+function drawCurrentBoard() {
+  background(0);
+  let cellSize = min(floor(width / BOARDWIDTH), floor(height / BOARDHEIGHT));
+  for (let i = 0; i < BOARDHEIGHT; i++) {
+    for (let j = 0; j < BOARDWIDTH; j++) {
+      let index = i * BOARDWIDTH + j;
+      stroke(255);
+      switch (CURRENTBOARD.at(index).color) {
+        case "GREEN":
+          fill(0, 255, 0);
+          break;
+        case "RED":
+          fill(255, 0, 0);
+          break;
+        default:
+          break;
+      }
+      rect(j * cellSize, i * cellSize, cellSize, cellSize);
+    }
+  }
 }
