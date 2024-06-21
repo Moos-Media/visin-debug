@@ -9,7 +9,7 @@ function preload() {
 
 function setup() {
   canvasUI = createCanvas(window.innerWidth, window.innerHeight - 250);
-  frameRate(1);
+  frameRate(30);
 
   if (!isLoggedIn) {
     drawLoginWarning();
@@ -18,8 +18,7 @@ function setup() {
 
 function draw() {
   if (isLoggedIn) {
-    getCurrentBoardInfo();
-    drawCurrentBoard();
+    getCurrentBoardInfo().then(drawCurrentBoard);
   }
 }
 
@@ -110,15 +109,28 @@ function drawCurrentBoard() {
   for (let i = 0; i < BOARDHEIGHT; i++) {
     for (let j = 0; j < BOARDWIDTH; j++) {
       let index = i * BOARDWIDTH + j;
-      stroke(255);
+      stroke(0);
       switch (CURRENTBOARD.at(index).color) {
         case "GREEN":
-          fill(0, 255, 0);
+          fill(128, 186, 36);
           break;
-        case "RED":
-          fill(255, 0, 0);
+        case "WHITE":
+          fill(255, 255, 255);
+          break;
+        case "COLOR1":
+          fill(255, 255, 0);
+          break;
+        case "COLOR2":
+          fill(0, 255, 255);
+          break;
+        case "COLOR3":
+          fill(255, 0, 255);
+          break;
+        case "COLOR4":
+          fill(0, 0, 255);
           break;
         default:
+          fill(0, 0, 0);
           break;
       }
       rect(j * cellSize, i * cellSize, cellSize, cellSize);
