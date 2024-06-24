@@ -8,6 +8,7 @@ function preload() {
 }
 
 function setup() {
+  var socket = io.connect();
   canvasUI = createCanvas(window.innerWidth, window.innerHeight - 250);
   frameRate(30);
 
