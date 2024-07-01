@@ -119,16 +119,22 @@ function drawCurrentBoard() {
           fill(255, 255, 255);
           break;
         case "COLOR1":
-          fill(255, 255, 0);
+          fill("#186ba2");
           break;
         case "COLOR2":
-          fill(0, 255, 255);
+          fill("#c01111");
           break;
         case "COLOR3":
-          fill(255, 0, 255);
+          fill("#dfb234");
           break;
         case "COLOR4":
-          fill(0, 0, 255);
+          fill("#d8317f");
+          break;
+        case "COLOR5":
+          fill("#e6662f");
+          break;
+        case "COLOR6":
+          fill("#00b8ac");
           break;
         default:
           fill(0, 0, 0);
