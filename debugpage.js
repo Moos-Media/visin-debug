@@ -1,7 +1,8 @@
 let isLoggedIn = false;
 let SESSIONTOKEN;
 let CURRENTBOARD, BOARDWIDTH, BOARDHEIGHT;
-let usernameLabel, usernameInput, passwordLabel, passwordInput;
+let usernameLabel, usernameInput, passwordLabel, passwordInput, newBrightness;
+let finishedSetup = false;
 
 function preload() {
   if (!isLoggedIn) createLoginUI();
@@ -17,9 +18,21 @@ function setup() {
   }
 }
 
-function draw() {
+async function draw() {
   if (isLoggedIn) {
     getCurrentBoardInfo().then(drawCurrentBoard);
+
+    if (!finishedSetup) {
+      let newBrighntessLabel = createElement(
+        "p",
+        "Helligkeit des Modells ändern (0-255):"
+      );
+      newBrightness = createElement("input", "0");
+      let newBrightnessButton = createButton("Bestätigen");
+
+      newBrightnessButton.mousePressed(changeBrightness);
+      finishedSetup = true;
+    }
   }
 }
 
@@ -144,3 +157,28 @@ function drawCurrentBoard() {
     }
   }
 }
+
+const changeBrightness = async (e) => {
+  //Prevent default button behavior
+  e.preventDefault();
+
+  let inputValue = Math.floor(newBrightness.value());
+  if (typeof inputValue == "number") {
+    if (inputValue <= 255) {
+      const data = { inputValue };
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      };
+
+      const response = await fetch("/api/show/setBrightness", options);
+      const json = await response.json();
+      if (json.success) {
+        console.log("Success!");
+      }
+    }
+  }
+};
