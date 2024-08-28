@@ -1,7 +1,12 @@
 let isLoggedIn = false;
 let SESSIONTOKEN;
 let CURRENTBOARD, BOARDWIDTH, BOARDHEIGHT;
-let usernameLabel, usernameInput, passwordLabel, passwordInput, newBrightness;
+let usernameLabel,
+  usernameInput,
+  passwordLabel,
+  passwordInput,
+  newBrightness,
+  newTime;
 let finishedSetup = false;
 
 function preload() {
@@ -32,6 +37,16 @@ async function draw() {
 
       newBrightness.changed(changeBrightness);
       newBrightnessButton.mousePressed(changeBrightness);
+
+      let newTimeLabel = createElement(
+        "p",
+        "Zeitbeschränkung pro Spiel ändern (in Minuten):"
+      );
+      newTime = createElement("input", "0");
+      let newTimeButton = createButton("Bestätigen");
+
+      newTime.changed(changeTime);
+      newTimeButton.mousePressed(changeTime);
       finishedSetup = true;
     }
   }
@@ -167,7 +182,7 @@ const changeBrightness = async (e) => {
   let inputValue = Math.floor(newBrightness.value());
   if (typeof inputValue == "number") {
     if (inputValue <= 255) {
-      const data = { inputValue };
+      const data = { inputValue, SESSIONTOKEN };
       const options = {
         method: "POST",
         headers: {
@@ -180,6 +195,33 @@ const changeBrightness = async (e) => {
       const json = await response.json();
       if (json.success) {
         console.log("Success!");
+        newBrightness.value("");
+      }
+    }
+  }
+};
+
+const changeTime = async (e) => {
+  //Prevent default button behavior
+  e.preventDefault();
+
+  let inputValue = Math.floor(newTime.value());
+  if (typeof inputValue == "number") {
+    if (inputValue <= 255) {
+      const data = { inputValue, SESSIONTOKEN };
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      };
+
+      const response = await fetch("/api/debug/setTime", options);
+      const json = await response.json();
+      if (json.success) {
+        console.log("Success!");
+        newBrightness.value("");
       }
     }
   }
