@@ -81,6 +81,7 @@ const createLoginUI = () => {
   passwordInput = createInput("", "password");
   loginButton = createButton("Login");
 
+  passwordInput.changed(login);
   loginButton.mousePressed(login);
 };
 
