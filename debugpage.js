@@ -9,15 +9,21 @@ let usernameLabel,
   newTime;
 let finishedSetup = false;
 
+//Setup page beforehand
 function preload() {
   if (!isLoggedIn) createLoginUI();
 }
 
 function setup() {
+  //Connect to socket
   var socket = io.connect();
+
+  //create Canvas for Login page and game debug animation
   canvasUI = createCanvas(window.innerWidth, window.innerHeight - 250);
+  //Set framerate for redrawnig of game
   frameRate(30);
 
+  // Draw login warning to canvas
   if (!isLoggedIn) {
     drawLoginWarning();
   }
@@ -25,8 +31,10 @@ function setup() {
 
 async function draw() {
   if (isLoggedIn) {
+    //Update Game Debug screen
     getCurrentBoardInfo().then(drawCurrentBoard);
 
+    //Setup Elements on Scrren, only on first run through
     if (!finishedSetup) {
       let newBrighntessLabel = createElement(
         "p",
@@ -55,9 +63,12 @@ async function draw() {
 const login = async (e) => {
   //Prevent default button behavior
   e.preventDefault();
+
+  //Get data from input fields
   const username = usernameInput.value();
   const passkey = passwordInput.value();
 
+  //Setup POST request
   const data = { username, passkey };
   const options = {
     method: "POST",
@@ -67,6 +78,7 @@ const login = async (e) => {
     body: JSON.stringify(data),
   };
 
+  //Send request and handle result
   const response = await fetch("/api/debug/login", options);
   const json = await response.json();
   if (json.result) {
@@ -107,14 +119,15 @@ const cleanLoginUI = () => {
   passwordLabel.remove();
   passwordInput.remove();
   loginButton.remove();
-  resizeCanvas(window.innerWidth, window.innerHeight);
 };
 
+//Handle resizing of browser window
 function windowResized() {
-  resizeCanvas(window.innerWidth, window.innerHeight);
+  resizeCanvas(window.innerWidth, window.innerHeight - 250);
 }
 
 async function getCurrentBoardInfo() {
+  // Prepare request
   const data = { sessionToken: SESSIONTOKEN };
   const options = {
     method: "POST",
@@ -124,6 +137,7 @@ async function getCurrentBoardInfo() {
     body: JSON.stringify(data),
   };
 
+  //POST request and handle result
   const response = await fetch("/api/debug/getCurrentBoard", options);
   const json = await response.json();
 
@@ -135,12 +149,16 @@ async function getCurrentBoardInfo() {
 }
 
 function drawCurrentBoard() {
-  background(0);
+  // Set background to white
+  background(255);
+  //calculate cell size based on size of canvas
   let cellSize = min(floor(width / BOARDWIDTH), floor(height / BOARDHEIGHT));
+  // Loop through all rectangles
   for (let i = 0; i < BOARDHEIGHT; i++) {
     for (let j = 0; j < BOARDWIDTH; j++) {
       let index = i * BOARDWIDTH + j;
       stroke(0);
+      //get color
       switch (CURRENTBOARD.at(index).color) {
         case "GREEN":
           fill(128, 186, 36);
@@ -170,6 +188,7 @@ function drawCurrentBoard() {
           fill(0, 0, 0);
           break;
       }
+      //draw individual rectangles
       rect(j * cellSize, i * cellSize, cellSize, cellSize);
     }
   }
@@ -179,8 +198,10 @@ const changeBrightness = async (e) => {
   //Prevent default button behavior
   e.preventDefault();
 
+  //Setup Post request
   let inputValue = Math.floor(newBrightness.value());
   if (typeof inputValue == "number") {
+    //Validate number is in range
     if (inputValue <= 255) {
       const data = { inputValue, SESSIONTOKEN };
       const options = {
@@ -205,6 +226,7 @@ const changeTime = async (e) => {
   //Prevent default button behavior
   e.preventDefault();
 
+  //Setup POST request and validate input
   let inputValue = Math.floor(newTime.value());
   if (typeof inputValue == "number") {
     if (inputValue <= 255) {
