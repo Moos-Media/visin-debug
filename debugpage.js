@@ -30,6 +30,7 @@ async function draw() {
       newBrightness = createElement("input", "0");
       let newBrightnessButton = createButton("Bestätigen");
 
+      newBrightness.changed(changeBrightness);
       newBrightnessButton.mousePressed(changeBrightness);
       finishedSetup = true;
     }
